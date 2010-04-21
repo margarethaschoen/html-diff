@@ -1,0 +1,52 @@
+/* for source level comparation  <div> */
+.LadanDiffAppend,
+.LadanDiffDelete,
+.LadanDiffChange,
+.LadanDiffBlank
+{
+	padding-left: 5px; 
+	width: 800px; 
+	font-size: 11pt;
+}
+
+/* appende block <div> for source level comparation */
+.LadanDiffAppend
+{
+	background-color: #99FF66;
+	border-left: solid 7px #33CC33;
+}
+
+/* delete block <div> for source level comparation  */
+.LadanDiffDelete
+{
+	background-color: #FA8072; 
+	border-left: solid 7px #DC143C;
+}
+
+/* non changed block <div> for source level comparation  */
+.LadanDiffBlank
+{
+	background-color: #B0C4DE; 
+	border-left: solid 7px #0000FF;
+}
+
+/* change block <div> for source level comparation  */
+.LadanDiffChange
+{
+	background-color: #B691D6; 
+	border-left: solid 7px #8A2BE2;
+}
+
+/* appende block <span> for shown text level comparation */
+/* and appende words <span> in changed block for source level comparation */
+.LadanDiffChangeAppend
+{
+	background-color: #99FF66;
+}
+
+/* delete block <span> for shown text level comparation */
+/* and delete words <span> in changed block for source level comparation */
+.LadanDiffChangeDelete
+{
+	background-color: #FA8072;
+}
