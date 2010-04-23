@@ -8,7 +8,6 @@
  * @version 1.0
  */
 
-#include "config.h"
 #include "fce.h"
 
 /* Delete all comments from input file. */

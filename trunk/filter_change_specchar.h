@@ -8,7 +8,6 @@
  * @version 1.0
  */
 
-#include "config.h"
 #include "fce.h"
 
 /* Replace all special character to entits. */
