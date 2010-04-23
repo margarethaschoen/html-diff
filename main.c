@@ -19,10 +19,6 @@
  * Output is one HTML file - revision of diferences input files.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "lib/getopt.h"
 #include "config.h"
 #include "last_modification.h"
@@ -663,6 +659,179 @@ void clean_programm()
 }
 
 /**
+ * Load input parameters from command line.
+ * @param argc Count of arguments from command line.
+ * @param argv Array of arguments.
+ * @return int Sign if end the programm (0 = end; 1 = continue).
+ */
+int load_cmd_parameters(int argc, char *argv[])
+{
+	/* For testing of input options from command line. */
+	int test_i = 0;
+	
+	/* For reading singel input parameters. */
+	int option_char;
+
+	/* Array of number of turning off filtres. */
+	char *turn_off_filtres[COUNT_OF_FILTRES];
+
+	/* Forcycle for reading list of turning off filtres. */
+	int loop;
+
+	/* Reading of input parameters and save configuration from command line. */
+	while(option_char = getopt_long(argc, argv, shortopts, long_options, NULL), option_char != EOF)
+	{
+		switch(option_char)
+		{
+			/* Explain options. */
+			case 'h':
+				usage(0);
+				return 0;
+				break;
+			
+			/* Source level comparation. */
+			case 's':
+				config.compare = source;
+				break;
+			
+			/* Shown text level comparation. */
+			case 't':
+				config.compare = text;
+				break;
+
+			/* Line by line comparation. */
+			case 'L':
+				config.compare_lvl = lines;
+				break;
+			
+			/* Words by words comparation. */
+			case 'W':
+				config.compare_lvl = words;
+				break;
+
+			/* Debug - don't erase temp file. */
+			case 'd':
+				config.debug = 1;
+				break;
+
+			/* Log level. */
+			case 'l':
+				test_i = atoi(optarg);
+
+				/* Test of input. */
+				if(test_i >= 0 && test_i <= 4){
+					config.log_level = atoi(optarg);
+				}
+				break;
+
+			/* Log to file. */
+			case 'f':
+				config.log_to_file = 1;
+				break;
+
+			/* Log to file and log filename. */
+			case 'F':
+				config.log_to_file = 1;
+				config.log_file_name = optarg;
+				break;
+
+			/* Name of external diff programm. */
+			case 'D':
+				config.diff = optarg;
+				break;
+
+			/** GNU Diff Performance Tradeoffs. http://www.gnu.org/software/diffutils/manual/html_mono/diff.html.gz#diff%20Performance. */
+			case 'x':
+				config.diff_minimal = 1;
+				break;
+
+			/** GNU Diff Performance Tradeoffs. http://www.gnu.org/software/diffutils/manual/html_mono/diff.html.gz#diff%20Performance. */
+			case 'y':
+				config.diff_speed_large_files = 1;
+				break;
+
+			/* Name of external patch programm. */
+			case 'P':
+				config.patch = optarg;
+				break;
+
+			/* Name of revision. */
+			case 'R':
+				config.revision_name = optarg;
+				break;
+
+			/* Highlights mode - css style is added to tags directly = 1 or eternal css = 2 or embedded = 3. */
+			case 'c':
+				test_i = atoi(optarg);
+
+				/* Test of input. */
+				if(test_i == 1 || test_i == 2 || test_i == 3){
+					config.css = atoi(optarg);
+				}
+				break;
+
+			/*  Name of external css style sheet. */
+			case 'C':
+				config.css = 2;
+				config.css_name = optarg;
+				break;
+
+			/* Shows filters. */
+			case 'n':
+				show_filtres();
+				return 0;
+				break;
+
+			/* Turn off filters. */
+			case 'O':
+				turn_off_filtres[0] = strtok(optarg, ",");
+
+				/* No input number. */
+				if(turn_off_filtres[0]==NULL){break;}
+				else
+				{
+					/* Revert to integer. */
+					test_i = atoi(turn_off_filtres[0]);
+
+					/* Test range of integer. */
+					if(test_i >= 0 && test_i < COUNT_OF_FILTRES){
+						
+						/* Turn off filter if can be disabled. */
+						if(filter_array[test_i].filter_can_off){
+							filter_array[test_i].turn_off = 1;
+						}
+					}
+				}
+
+				for(loop=1; loop<COUNT_OF_FILTRES; loop++)
+				{
+					turn_off_filtres[loop] = strtok(NULL, ",");
+
+					if(turn_off_filtres[loop] == NULL){break;}
+					else{
+						/* Revert to integer. */
+						test_i = atoi(turn_off_filtres[loop]);
+
+						/* Test range of integer. */
+						if(test_i >= 0 && test_i < COUNT_OF_FILTRES){
+
+							/* Turn off filter if can be disabled. */
+							if(filter_array[test_i].filter_can_off){
+								filter_array[test_i].turn_off = 1;
+							}
+						}
+					}
+				}
+				break;
+
+			default:
+				usage(2);
+		}
+	}
+	return 1;
+}
+
+/**
  * Preprocesing of compare.
  * Every filter make new file which is used for its output.\n
  * Output from previous filter is input for folowing filter.\n
@@ -863,9 +1032,6 @@ int re_filtres(SIDE *side){
 /** Main function. */
 int main(int argc, char *argv[])
 {
-	/* For reading input parameters. */
-	int option_char;
-
 	/* Output patch file from diff which is modife. */
 	char *patch_file_name;
 
@@ -884,20 +1050,11 @@ int main(int argc, char *argv[])
 	/* Sign if the file are same. */
 	int no_changes = 0;
 
-	/* For testing of input options from command line. */
-	int test_i = 0;
-
 	/* Revision file - use only if file are same. */
 	FILE *revision = NULL;
 
 	/* For checking if exists diff and patch. */
 	FILE *exists_diff, *exists_patch;
-
-	/* Array of number of turning off filtres. */
-	char *turn_off_filtres[COUNT_OF_FILTRES];
-
-	/* Forcycle for reading list of turning off filtres. */
-	int loop;
 
 	/* Save name of this program. */
 	program_name = argv[0];
@@ -911,156 +1068,8 @@ int main(int argc, char *argv[])
 	/* Load filtres function to array. */
 	load_filtres();
 
-	/* Reading of input parameters and save configuration from command line. */
-	while(option_char = getopt_long(argc, argv, shortopts, long_options, NULL), option_char != EOF)
-	{
-		switch(option_char)
-		{
-			/* Explain options. */
-			case 'h':
-				usage(0);
-				return 0;
-				break;
-			
-			/* Source level comparation. */
-			case 's':
-				config.compare = source;
-				break;
-			
-			/* Shown text level comparation. */
-			case 't':
-				config.compare = text;
-				break;
-
-			/* Line by line comparation. */
-			case 'L':
-				config.compare_lvl = lines;
-				break;
-			
-			/* Words by words comparation. */
-			case 'W':
-				config.compare_lvl = words;
-				break;
-
-			/* Debug - don't erase temp file. */
-			case 'd':
-				config.debug = 1;
-				break;
-
-			/* Log level. */
-			case 'l':
-				test_i = atoi(optarg);
-
-				/* Test of input. */
-				if(test_i >= 0 && test_i <= 4){
-					config.log_level = atoi(optarg);
-				}
-				break;
-
-			/* Log to file. */
-			case 'f':
-				config.log_to_file = 1;
-				break;
-
-			/* Log to file and log filename. */
-			case 'F':
-				config.log_to_file = 1;
-				config.log_file_name = optarg;
-				break;
-
-			/* Name of external diff programm. */
-			case 'D':
-				config.diff = optarg;
-				break;
-
-			/** GNU Diff Performance Tradeoffs. http://www.gnu.org/software/diffutils/manual/html_mono/diff.html.gz#diff%20Performance. */
-			case 'x':
-				config.diff_minimal = 1;
-				break;
-
-			/** GNU Diff Performance Tradeoffs. http://www.gnu.org/software/diffutils/manual/html_mono/diff.html.gz#diff%20Performance. */
-			case 'y':
-				config.diff_speed_large_files = 1;
-				break;
-
-			/* Name of external patch programm. */
-			case 'P':
-				config.patch = optarg;
-				break;
-
-			/* Name of revision. */
-			case 'R':
-				config.revision_name = optarg;
-				break;
-
-			/* Highlights mode - css style is added to tags directly = 1 or eternal css = 2 or embedded = 3. */
-			case 'c':
-				test_i = atoi(optarg);
-
-				/* Test of input. */
-				if(test_i == 1 || test_i == 2 || test_i == 3){
-					config.css = atoi(optarg);
-				}
-				break;
-
-			/*  Name of external css style sheet. */
-			case 'C':
-				config.css = 2;
-				config.css_name = optarg;
-				break;
-
-			/* Shows filters. */
-			case 'n':
-				show_filtres();
-				return 0;
-				break;
-
-			/* Turn off filters. */
-			case 'O':
-				turn_off_filtres[0] = strtok(optarg, ",");
-
-				/* No input number. */
-				if(turn_off_filtres[0]==NULL){break;}
-				else
-				{
-					/* Revert to integer. */
-					test_i = atoi(turn_off_filtres[0]);
-
-					/* Test range of integer. */
-					if(test_i >= 0 && test_i < COUNT_OF_FILTRES){
-						
-						/* Turn off filter if can be disabled. */
-						if(filter_array[test_i].filter_can_off){
-							filter_array[test_i].turn_off = 1;
-						}
-					}
-				}
-
-				for(loop=1; loop<COUNT_OF_FILTRES; loop++)
-				{
-					turn_off_filtres[loop] = strtok(NULL, ",");
-
-					if(turn_off_filtres[loop] == NULL){break;}
-					else{
-						/* Revert to integer. */
-						test_i = atoi(turn_off_filtres[loop]);
-
-						/* Test range of integer. */
-						if(test_i >= 0 && test_i < COUNT_OF_FILTRES){
-
-							/* Turn off filter if can be disabled. */
-							if(filter_array[test_i].filter_can_off){
-								filter_array[test_i].turn_off = 1;
-							}
-						}
-					}
-				}
-				break;
-
-			default:
-				usage(2);
-		}
-	}
+	/* Load input parameters. */
+	if(!load_cmd_parameters(argc, argv)){return 0;}
 
 	/* Load to config highlight tags depended on comparation level. */
 	load_highlight_tags(config.css);
@@ -1214,7 +1223,7 @@ int main(int argc, char *argv[])
 		/* Before close of programm have to clean it up. */
 		clean_programm();
 	        
-		return 1;	
+		return 1;
     }
 
 	program_log(3, "End of postprocessing.\n", "");

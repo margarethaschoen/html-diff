@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifndef CONFIG
 #define CONFIG /**< For only one include to programm. */

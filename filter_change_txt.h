@@ -8,7 +8,6 @@
  * @version 1.0
  */
 
-#include "config.h"
 #include "fce.h"
 
 /* Make avalible configuration. For recongizing of type comparation and highlights tags. */
