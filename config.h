@@ -29,10 +29,10 @@
 	#define DEBUG 0
 
 	/** Comapration level - base on source level (0) or shown text level (1). */
-	#define COMPARE 1
+	#define COMPARE text
 
 	/** Comparation level - line by line (0) or word by word comparation (1). */
-	#define COMPARE_LVL 1
+	#define COMPARE_LVL words
 
 	/** Logging level - mean what is logged (high = more log information). Range: 0-4. */
 	#define LOG_LEVEL 3
@@ -51,9 +51,6 @@
 	
 	/** GNU Diff Performance Tradeoffs. http://www.gnu.org/software/diffutils/manual/html_mono/diff.html.gz#diff%20Performance. */
 	#define DIFF_SPEED_LARGE_FILES 0
-
-	/** Name of patch program - (GNU Patch). */
-	#define PATCH "patch.exe"
 
 	/** Name of patch program - (GNU Patch). */
 	#define PATCH "patch.exe"

@@ -122,8 +122,8 @@ void load_filters()
 	filter_array[2].filter_can_off = 0;
 
 	/* Change special chars to entites. */
-    filter_array[3].fce_filter = filter_change_specchar;
-    filter_array[3].fce_re_filter = NULL;
+	filter_array[3].fce_filter = filter_change_specchar;
+	filter_array[3].fce_re_filter = NULL;
 	strcpy(filter_array[3].filter_name, "Change special character");
 	filter_array[3].compare = source;
 	filter_array[3].turn_off = 0;
@@ -205,8 +205,18 @@ void load_config()
 
 	/* Load default from constants from config.h. */
 	config.debug = DEBUG;
-	config.compare = COMPARE;
-	config.compare_lvl = COMPARE_LVL;	
+	switch(COMPARE){
+		case 0: config.compare = source;
+				break;
+		case 1: config.compare = text;
+				break;
+		case 2: config.compare = both;
+	}
+	switch(COMPARE_LVL){
+		case 0: config.compare_lvl = lines;
+				break;
+		case 1: config.compare_lvl = words;
+	}
 	config.log_level = LOG_LEVEL;
 	config.log_to_file = LOG_TO_FILE;
 	config.log_file_name = LOG_FILE_NAME;
@@ -259,7 +269,11 @@ void load_config()
 						
 						/* Test of input. */
 						if(test_i == 0 || test_i == 1){
-							config.compare = atoi(cfg_file.word);
+							switch(test_i){
+								case 0: config.compare = source;
+										break;
+								case 1: config.compare = text;
+							}
 						}
 					}
 					else if(!strcmp(cfg_file.word,"DIFF_MINIMAL"))
@@ -289,7 +303,11 @@ void load_config()
 						
 						/* Test of input. */
 						if(test_i == 0 || test_i == 1){
-							config.compare_lvl = atoi(cfg_file.word);
+							switch(test_i){
+								case 0: config.compare_lvl = lines;
+										break;
+								case 1: config.compare_lvl = words;
+							}
 						}
 					}
 					else if(!strcmp(cfg_file.word,"LOG_LEVEL"))
@@ -1097,21 +1115,17 @@ int main(int argc, char *argv[])
 		program_log(0, " - COMPARATION ON SHOWN TEXT LEVEL -\n", "");
 	}
 
-	/* Test if exists diff. If not then close program. */
+	/* Test if exists diff. */
 	if((exists_diff = fopen(config.diff, "r" )) == NULL )
 	{
 		program_log(1, "Diff: \"%s\" doesn't exists.", config.diff);
-		clean_programm();
-		return 1;
 	}
 	else{fclose(exists_diff);}
 	
-	/* Test if exists patch. If not then close program. */
+	/* Test if exists patch. */
 	if((exists_patch = fopen(config.patch, "r" )) == NULL )
 	{
 		program_log(1, "Patch: \"%s\" doesn't exists.", config.patch);
-		clean_programm();
-		return 1;
 	}
 	else{fclose(exists_patch);}
 
@@ -1172,8 +1186,8 @@ int main(int argc, char *argv[])
 
 		/* Command for diff. */
 		command_diff_lenght = strlen(config.diff)+
-								strlen(left_side->temp_filename_to)+
-								strlen(right_side->temp_filename_to)+
+								strlen(left_side->norm_filename)+
+								strlen(right_side->norm_filename)+
 								strlen(patch_file_name)+6;
 		
 		if(config.diff_minimal){command_diff_lenght += 3;}
@@ -1184,9 +1198,9 @@ int main(int argc, char *argv[])
 		/* Making command of diff. */
 		strcpy(command_diff, config.diff);
 		strcat(command_diff, " ");
-		strcat(command_diff, left_side->temp_filename_to);	/* Origin normalizated file. */
+		strcat(command_diff, left_side->norm_filename);	/* Origin normalizated file. */
 		strcat(command_diff, " ");
-		strcat(command_diff, right_side->temp_filename_to);	/* Modife normalizated file. */
+		strcat(command_diff, right_side->norm_filename);	/* Modife normalizated file. */
 		
 		if(config.diff_minimal){
 			strcat(command_diff, " -d");
