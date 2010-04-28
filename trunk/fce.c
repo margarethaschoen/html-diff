@@ -120,7 +120,7 @@ int copy_whitespace(SIDE *side)
 			side->size_white_space *= 2;
 
 			/* Realloc of side->white_space. */
-			if((side->white_space = realloc(side->white_space,side->size_white_space)) == NULL){
+			if((side->white_space = (char*) realloc(side->white_space,side->size_white_space)) == NULL){
 				printf("Error: Chyba reallocu retezce bilych znaku...");
 				return 1;
 			}
@@ -161,7 +161,7 @@ int copy_word(SIDE *side)
 			side->size_word *= 2;
 
 			/* Realloc of side->word. */
-			if((side->word = realloc(side->word,side->size_word)) == NULL){
+			if((side->word = (char*) realloc(side->word,side->size_word)) == NULL){
 				printf("Error: realloc of reading word...");
 				return 1;
 			}
@@ -332,12 +332,18 @@ int is_digit(char number)
  */
 char *my_tempnam(char *prefix)
 {
-	if(prefix != NULL)
-	{
-		return _tempnam("c:\\tmp", prefix);
+	char *tmp_name = NULL;
+
+	if(prefix != NULL){
+		tmp_name = (char*) malloc(strlen(prefix)+1+L_tmpnam+5);
 	}
-	else
-	{
-		return _tempnam("c:\\tmp", "ladandiff_");
+	else{
+		tmp_name = (char*) malloc(L_tmpnam+4);
 	}
+
+	tmpnam(tmp_name);
+
+	/* Because ms windows - save tmp files to executing directory instead root directory. */
+	if(tmp_name[0] == '\\'){tmp_name[0] = '/';}
+	return tmp_name;
 }
