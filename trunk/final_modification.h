@@ -1,6 +1,6 @@
 /** 
- * @file last_modification.h
- * @brief Header for last_modification.c (last modification of revision).
+ * @file final_modification.h
+ * @brief Header for final_modification.c (final modification of revision).
  *
  * \image html logo3.jpg
  * @author Ladislav Novak
@@ -13,5 +13,5 @@
 /* Make avalible configuration. For recongizing of type comparation. */
 extern CONFIGURATION config;
 
-/* Process last modification of revision file. */
-int last_modification(char *);
+/* Process final modification of revision file. */
+int final_modification(char *);

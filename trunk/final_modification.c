@@ -1,26 +1,26 @@
 /** 
- * @file last_modification.c
- * @brief Last modification of revision file.
+ * @file final_modification.c
+ * @brief Final modification of revision file.
  *
  * \image html logo3.jpg
  * @author Ladislav Novak
  * @date 2008-2010
  * @version 1.0
  *
- * Process last modification of rivision file:
+ * Process final modification of rivision file:
  *	Wrap all line that aren't in append/delete/change blocks.
  *	Delete sign of (APPEND|DELETE|CHANGE)_MIDDLE on source level comparation.
  *	Add css style to begening of file.
  */
 
-#include "last_modification.h"
+#include "final_modification.h"
 
 /**
- * Process last modification of revision file.
+ * Process final modification of revision file.
  * @param name_of_revision Name of revision file.
  * @return Void.
  */
-int last_modification(char* name_of_revision)
+int final_modification(char* name_of_revision)
 {
 	SIDE rev;
 	SIDE* revision = &rev;

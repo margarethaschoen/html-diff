@@ -21,7 +21,7 @@
 
 #include "lib/getopt.h"
 #include "config.h"
-#include "last_modification.h"
+#include "final_modification.h"
 
 /* Filtres headers. */
 #include "filter_delete_comment.h"
@@ -95,7 +95,7 @@ char *program_name;
  * Saving pointers to filters to array struct.
  * @return (None).
  */
-void load_filtres()
+void load_filters()
 {
 	/* Deleting comment. */
 	filter_array[0].fce_filter = filter_delete_comment;
@@ -839,7 +839,7 @@ int load_cmd_parameters(int argc, char *argv[])
  * @param side Struct of side.
  * @return int Sign if preprocesing was ok.
  */
-int filtres(SIDE *side){
+int filters(SIDE *side){
 	/* For moving betwen filtres. */
 	int i;
     
@@ -949,7 +949,7 @@ int filtres(SIDE *side){
  * @param side Struct of side.
  * @return int Sign if postprocesing was ok.
  */
-int re_filtres(SIDE *side){
+int re_filters(SIDE *side){
 	/* For moving betwen filtres. */
 	int i;
 
@@ -1066,7 +1066,7 @@ int main(int argc, char *argv[])
 	load_config();
 
 	/* Load filtres function to array. */
-	load_filtres();
+	load_filters();
 
 	/* Load input parameters. */
 	if(!load_cmd_parameters(argc, argv)){return 0;}
@@ -1138,7 +1138,7 @@ int main(int argc, char *argv[])
 	program_log(3, "Start of preprocessing of origin file '%s'.", left_side->input_file_name);
 
 	/* Preprocessing of origin file. */
-	if(filtres(left_side))
+	if(filters(left_side))
     {
 		program_log(1, "Fail in preprocessing file '%s'.", left_side->temp_filename_to);
 
@@ -1154,7 +1154,7 @@ int main(int argc, char *argv[])
 	program_log(3, "Start of preprocessing of modife file '%s'.", right_side->input_file_name);
 
 	/* Preprocessing of modife file. */
-	if(filtres(right_side))  //modifikovany
+	if(filters(right_side))  //modifikovany
 	{
 		program_log(1, "Fail in preprocessing file '%s'.", right_side->temp_filename_to);
 		
@@ -1213,7 +1213,7 @@ int main(int argc, char *argv[])
 	program_log(3, "Start of postprocessing (make patch file for revision).", "");
 
 	/* Postprocessing - making new patch file. */
-	no_changes = re_filtres(left_side);
+	no_changes = re_filters(left_side);
 
 	/* Error in postprocessing. */
 	if(no_changes && no_changes != 3)
@@ -1259,7 +1259,7 @@ int main(int argc, char *argv[])
 		program_log(3, "Final modification of revision file.", "");
 
 		/* Last modification of final revision. */
-		if(last_modification(revision_name))
+		if(final_modification(revision_name))
 		{
 			program_log(1, "Error in last modification of revision file.", "");
 
@@ -1276,7 +1276,7 @@ int main(int argc, char *argv[])
 		program_log(0, "NO DIFERENCES IN INPUT FILES.", "");
 
 		/* Make revision file with information that file are same. Open temp revision file. */
-		if((revision = fopen(revision_name, "w+")) == NULL){
+		if((revision = fopen(&revision_name[4], "w+")) == NULL){
 			program_log(2, "Cannot open revision file '%s'.", revision_name);
 		}
 		else
