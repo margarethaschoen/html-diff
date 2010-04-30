@@ -118,26 +118,26 @@ typedef	enum {lines, words} compare_level;
 /** Struct of highlighting border tags. */
 typedef struct hgh
 {
-	char *append_start;			/**< Hihlight tag for append. */
-	char *append_middle;		/**< Hihlight tag for append. */
-	char *append_end;			/**< Hihlight tag for append. */
+	char *append_start;			/**< Hihlight tag for append. Source level comparation. */
+	char *append_middle;		/**< Hihlight tag for append. Source level comparation. */
+	char *append_end;			/**< Hihlight tag for append. Source level comparation. */
 
-	char *delete_start;			/**< Hihlight tag for delete. */
-	char *delete_middle;		/**< Hihlight tag for delete. */
-	char *delete_end;			/**< Hihlight tag for delete. */
+	char *delete_start;			/**< Hihlight tag for delete. Source level comparation. */
+	char *delete_middle;		/**< Hihlight tag for delete. Source level comparation. */
+	char *delete_end;			/**< Hihlight tag for delete. Source level comparation. */
 
-	char *change_start;			/**< Hihlight tag for change. */
-	char *change_middle;		/**< Hihlight tag for change. */
-	char *change_end;			/**< Hihlight tag for change. */
+	char *change_start;			/**< Hihlight tag for change. Source level comparation. */
+	char *change_middle;		/**< Hihlight tag for change. Source level comparation. */
+	char *change_end;			/**< Hihlight tag for change. Source level comparation. */
 
-	char *blank_start;			/**< Hihlight tag for blank. */
-	char *blank_middle;			/**< Hihlight tag for blank. */
-	char *blank_end;			/**< Hihlight tag for blank. */
+	char *blank_start;			/**< Hihlight tag for blank. Source level comparation. */
+	char *blank_middle;			/**< Hihlight tag for blank. Source level comparation.  */
+	char *blank_end;			/**< Hihlight tag for blank. Source level comparation.  */
 
-	char *change_append_start;	/**< Hihlight tag for word change. */
-	char *change_append_end;	/**< Hihlight tag for word change. */
-	char *change_delete_start;	/**< Hihlight tag for word change. */
-	char *change_delete_end;	/**< Hihlight tag for word change. */
+	char *change_append_start;	/**< Hihlight tag for word change. Source and text level comparation. */
+	char *change_append_end;	/**< Hihlight tag for word change. Source and text level comparation. */
+	char *change_delete_start;	/**< Hihlight tag for word change. Source and text level comparation. */
+	char *change_delete_end;	/**< Hihlight tag for word change. Source and text level comparation. */
 } HGHLGH;
 
 /** 

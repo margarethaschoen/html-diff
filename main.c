@@ -9,14 +9,16 @@
  * @version 1.0
  *
  * @par Project:
- * This program was maded with final bachelor project. On Charles University in Prague - MFF (IT):
+ * This program was made as <a href="http://www.mff.cuni.cz/toUTF8.en/studium/bcmgr/">bachelor project</a> on 
+ * <a href="http://www.ksi.mff.cuni.cz/en/">Department of Software Engineering</a> at <a href="http://www.mff.cuni.cz/toUTF8.en/">Faculty of Mathematics and Physics</a>
+ * of <a href="http://www.cuni.cz/UKENG-1.html">Charles University in Prague</a>.
  * http://www.mff.cuni.cz.
  * \image html logo2.jpg "Facultas Mathematica-physicaque"
  *
  * @par Description:
- * A tool that compares HTML files and shows found differences in user-friendly manner.\n
- * The tool is able to compare files not only on the source level, but compare shown text.\n
- * Output is one HTML file - revision of diferences input files.
+ * The tool compares HTML files not only on the source level, 
+ * but tries to compare shown text as well, because there can exist more different source files that appear to be the same in the HTML browser.\n 
+ * Program is launched from command line and generates new file containing differential report with highlighted changes. 
  */
 
 #include "lib/getopt.h"
@@ -1118,14 +1120,14 @@ int main(int argc, char *argv[])
 	/* Test if exists diff. */
 	if((exists_diff = fopen(config.diff, "r" )) == NULL )
 	{
-		program_log(1, "Diff: \"%s\" doesn't exists.", config.diff);
+		program_log(2, "Diff: \"%s\" doesn't exists in working directory.", config.diff);
 	}
 	else{fclose(exists_diff);}
 	
 	/* Test if exists patch. */
 	if((exists_patch = fopen(config.patch, "r" )) == NULL )
 	{
-		program_log(1, "Patch: \"%s\" doesn't exists.", config.patch);
+		program_log(2, "Patch: \"%s\" doesn't exists in working directory.", config.patch);
 	}
 	else{fclose(exists_patch);}
 
