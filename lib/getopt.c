@@ -998,7 +998,7 @@ getopt_long (argc, argv, shortopts, longopts, longind)
 	 const struct option *longopts;
 	 int *longind;
 {
-  return _getopt_internal (argc, argv, shortopts, longopts, longind);
+  return _getopt_internal (argc, argv, shortopts, longopts, longind, 0);
 }
 
 #endif	/* Not ELIDE_CODE.  */

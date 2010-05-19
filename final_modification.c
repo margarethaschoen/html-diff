@@ -1,3 +1,20 @@
+/* Part of LadanDiff (Show differences between two HTML files.)
+   Copyright (C) 2008-2010
+   Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
 /** 
  * @file final_modification.c
  * @brief Final modification of revision file.
@@ -29,7 +46,7 @@ int final_modification(char* name_of_revision)
 	int new_line = 1;
 	
 	/* Sign for what part of file is. */
-	int faze = 1;
+	int phase = 1;
 
 	/* Revision file is reopen. And css style is appended to the begening of file. */
 	if(config.compare == source)
@@ -102,17 +119,17 @@ int final_modification(char* name_of_revision)
 							strcpy(revision->word, &revision->word[strlen(config.hl.change_middle)]);
 						}
 
-						if(!faze)
+						if(!phase)
 						{
 							fprintf(revision->temp_file_to, "%s", config.hl.blank_end);
-							faze++;
+							phase++;
 						}
 					}
 					else{
-						if(faze)
+						if(phase)
 						{
 							fprintf(revision->temp_file_to, "%s", config.hl.blank_start);
-							faze--;
+							phase--;
 						}
 						else
 						{
@@ -127,7 +144,7 @@ int final_modification(char* name_of_revision)
 				/* If is new line => set sign new line for checking what kind line is. */
 				if(revision->white_space[0] == '\n')
 				{
-					if(!faze){fprintf(revision->temp_file_to, "<br />");}
+					if(!phase){fprintf(revision->temp_file_to, "<br />");}
 					new_line = 1;
 				}
 				else{new_line = 0;}

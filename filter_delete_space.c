@@ -1,3 +1,20 @@
+/* Part of LadanDiff (Show differences between two HTML files.)
+   Copyright (C) 2008-2010
+   Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
 /** 
  * @file filter_delete_space.c
  * @brief Filter for deleting extra white spaces.
@@ -31,9 +48,14 @@ int filter_delete_space(SIDE* side)
 	/* Sign if was found new line. */
 	int new_line = 0;
 
+	/* Empty file. */
+	int is_empty = 1;
+
 	/* Reading file to end of it. */
 	while(side->character != EOF)
 	{
+		is_empty = 0;
+
 		/* Read word and white spaces from file. */
 		copy_word(side);
 		copy_whitespace(side);
@@ -71,16 +93,16 @@ int filter_delete_space(SIDE* side)
 		if(side->word[i]!=0)
 		{
 			fprintf(side->temp_file_to, "%s", side->word);
-		}
-
-		/* Write white space. */
-		if(side->white_space[i]!=0){
-			fprintf(side->temp_file_to, "%s", side->white_space);
+			
+			/* Write white space. */
+			if(side->white_space[i]!=0){
+				fprintf(side->temp_file_to, "%s", side->white_space);
+			}
 		}
 	}
 
 	/* Add blank line to the end of file if there wasn't one. Because GNU Diff. */
-	if(side->white_space[0] != '\n'){
+	if(side->white_space[0] != '\n' && !is_empty){
 		fprintf(side->temp_file_to, "%s", "\n");
 	}
 	return 0;
