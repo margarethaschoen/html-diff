@@ -1,3 +1,20 @@
+/*
+   Copyright (C) 2008-2010
+   Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
 /** 
  * @file config.h
  * @brief Default configuration and main stuct for programm
@@ -6,7 +23,7 @@
  * @author Ladislav Novak
  * @date 2008-2010
  * @version 1.0
- *
+ 
  * Order of akcepting configuration:
  *	- first place where programm search is command line
  *	- if isn't on command line then searching in config file (CONFIG_FILE_NAME)
@@ -43,17 +60,25 @@
 	/** Name file for logging - is ignored if LOG_TO_FILE is desabled. */
 	#define LOG_FILE_NAME "ladandiff.log"
 
-	/** Name of diff program - (GNU Diff). */
-	#define DIFF "diff.exe"
-
 	/** GNU Diff Performance Tradeoffs. http://www.gnu.org/software/diffutils/manual/html_mono/diff.html.gz#diff%20Performance. */
 	#define DIFF_MINIMAL 0
 	
 	/** GNU Diff Performance Tradeoffs. http://www.gnu.org/software/diffutils/manual/html_mono/diff.html.gz#diff%20Performance. */
 	#define DIFF_SPEED_LARGE_FILES 0
 
-	/** Name of patch program - (GNU Patch). */
-	#define PATCH "patch.exe"
+	#ifdef _WIN32
+		/** Name of diff program on win32 - (GNU Diff). */
+		#define DIFF "diff.exe"
+
+		/** Name of patch program on win32 - (GNU Patch). */
+		#define PATCH "patch.exe"
+	#else
+		/** Name of diff program - (GNU Diff). */
+		#define DIFF "diff"
+
+		/** Name of patch program - (GNU Patch). */
+		#define PATCH "patch"
+	#endif
 
 	/** Highlights mode - css style is added to tags directly = 1 or eternal css = 2 or embedded = 3. */
 	#define CSS 3
@@ -118,26 +143,26 @@ typedef	enum {lines, words} compare_level;
 /** Struct of highlighting border tags. */
 typedef struct hgh
 {
-	char *append_start;			/**< Hihlight tag for append. Source level comparation. */
-	char *append_middle;		/**< Hihlight tag for append. Source level comparation. */
-	char *append_end;			/**< Hihlight tag for append. Source level comparation. */
+	const char *append_start;			/**< Hihlight tag for append. Source level comparation. */
+	const char *append_middle;		/**< Hihlight tag for append. Source level comparation. */
+	const char *append_end;			/**< Hihlight tag for append. Source level comparation. */
 
-	char *delete_start;			/**< Hihlight tag for delete. Source level comparation. */
-	char *delete_middle;		/**< Hihlight tag for delete. Source level comparation. */
-	char *delete_end;			/**< Hihlight tag for delete. Source level comparation. */
+	const char *delete_start;			/**< Hihlight tag for delete. Source level comparation. */
+	const char *delete_middle;		/**< Hihlight tag for delete. Source level comparation. */
+	const char *delete_end;			/**< Hihlight tag for delete. Source level comparation. */
 
-	char *change_start;			/**< Hihlight tag for change. Source level comparation. */
-	char *change_middle;		/**< Hihlight tag for change. Source level comparation. */
-	char *change_end;			/**< Hihlight tag for change. Source level comparation. */
+	const char *change_start;			/**< Hihlight tag for change. Source level comparation. */
+	const char *change_middle;		/**< Hihlight tag for change. Source level comparation. */
+	const char *change_end;			/**< Hihlight tag for change. Source level comparation. */
 
-	char *blank_start;			/**< Hihlight tag for blank. Source level comparation. */
-	char *blank_middle;			/**< Hihlight tag for blank. Source level comparation.  */
-	char *blank_end;			/**< Hihlight tag for blank. Source level comparation.  */
+	const char *blank_start;			/**< Hihlight tag for blank. Source level comparation. */
+	const char *blank_middle;			/**< Hihlight tag for blank. Source level comparation.  */
+	const char *blank_end;			/**< Hihlight tag for blank. Source level comparation.  */
 
-	char *change_append_start;	/**< Hihlight tag for word change. Source and text level comparation. */
-	char *change_append_end;	/**< Hihlight tag for word change. Source and text level comparation. */
-	char *change_delete_start;	/**< Hihlight tag for word change. Source and text level comparation. */
-	char *change_delete_end;	/**< Hihlight tag for word change. Source and text level comparation. */
+	const char *change_append_start;	/**< Hihlight tag for word change. Source and text level comparation. */
+	const char *change_append_end;	/**< Hihlight tag for word change. Source and text level comparation. */
+	const char *change_delete_start;	/**< Hihlight tag for word change. Source and text level comparation. */
+	const char *change_delete_end;	/**< Hihlight tag for word change. Source and text level comparation. */
 } HGHLGH;
 
 /** 
@@ -156,7 +181,7 @@ typedef struct cfg
 	int log_to_file;
 
 	/** Name file for logging - is ignored if log_to_file is desabled. */
-	char *log_file_name;
+	const char *log_file_name;
 
 	/** Log file. */
 	FILE *log_file;
@@ -186,7 +211,7 @@ typedef struct cfg
 	int css;
 
 	/** Name of external css style sheet. */
-	char *css_name;
+	const char *css_name;
 
 	/** Highlights borders. */
 	HGHLGH hl;

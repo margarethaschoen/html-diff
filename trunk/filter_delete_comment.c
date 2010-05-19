@@ -1,3 +1,20 @@
+/* Part of LadanDiff (Show differences between two HTML files.)
+   Copyright (C) 2008-2010
+   Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
 /** 
  * @file filter_delete_comment.c
  * @brief Filter for deleting all comments.
@@ -27,7 +44,7 @@ int filter_delete_comment(SIDE* side)
 	char *finded = NULL;
 
 	/* Sign for what part of comment is searching. */
-	int faze = 0;
+	int phase = 0;
 
 	/* Reading while isn't end of file. */
 	while(side->character != EOF)
@@ -38,7 +55,7 @@ int filter_delete_comment(SIDE* side)
 		/* Something was loaded. */
 		while(side->word[0] != 0 || side->white_space[0] != 0)
 		{
-			switch(faze)
+			switch(phase)
 			{
 				/* Searching for begining of comment "<!--". */
 				case 0:
@@ -64,8 +81,8 @@ int filter_delete_comment(SIDE* side)
 							side->white_space[0] = 0;
 						}
 
-						/* Move on next faze - searching for "--". */
-						faze++;
+						/* Move on next phase - searching for "--". */
+						phase++;
 					}
 
 					/* Not finded begining of comment. Write to file word and white spaces. */
@@ -102,8 +119,8 @@ int filter_delete_comment(SIDE* side)
 							side->white_space[0] = 0;
 						}
 
-						/* Move to next faze - searching for end of comment ">". */
-						faze++;
+						/* Move to next phase - searching for end of comment ">". */
+						phase++;
 					}
 
 					/* Not finded "--". Erase word and white spaces because they are in comment. */
@@ -127,8 +144,8 @@ int filter_delete_comment(SIDE* side)
 						/* Copy to word everting after comment. */
 						strcpy(side->word, finded);
 
-						/* Move to first faze of searching - searchnig for begining of comment. */
-						faze = 0;
+						/* Move to first phase of searching - searchnig for begining of comment. */
+						phase = 0;
 					}
 
 					/* Not finded end of comment ">". Erase word and white spaces because they are in comment. */

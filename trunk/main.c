@@ -1,3 +1,20 @@
+/*
+   Copyright (C) 2008-2010
+   Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
 /** 
  * @file main.c
  * @brief Main source of program.
@@ -25,7 +42,7 @@
 #include "config.h"
 #include "final_modification.h"
 
-/* Filtres headers. */
+/* Filters headers. */
 #include "filter_delete_comment.h"
 #include "filter_separate_tags.h"
 #include "filter_delete_space.h"
@@ -38,7 +55,7 @@
 #include "filter_change_txt.h"
 
 /** Count of filters. */
-#define COUNT_OF_FILTRES 10
+#define COUNT_OF_FILTERS 10
 
 /** List of command line options. */
 static char const shortopts[] = "hl:fF:D:P:stdWLR:c:C:nO:xy";
@@ -70,7 +87,7 @@ SIDE struct_left_side, struct_right_side;	/**< Allocate struct of comparation fi
 SIDE *left_side = &struct_left_side;	/**< Information about first (origin) input file. */
 SIDE *right_side = &struct_right_side;	/**< Information about second (modife) input file. */
 
-/** New typ struct included pointers to filtres function. */
+/** New typ struct included pointers to filter function. */
 typedef struct filter FILTER;
 
 /** Struct of filters function for preprocessing and postprocessing function. */
@@ -84,13 +101,13 @@ struct filter
 	int filter_can_off;				/**< Would be truning off. */
 };
 
-/** For each filtr this array holds pointer to filtres main function. */
-FILTER filter_array[COUNT_OF_FILTRES];
+/** For each filtr this array holds pointer to filters main function. */
+FILTER filter_array[COUNT_OF_FILTERS+1];
 
 /** Configuration of hole program. */
 CONFIGURATION config;
 
-/** Name of this programm. */
+/** Name of this program. */
 char *program_name;
 
 /**
@@ -100,90 +117,90 @@ char *program_name;
 void load_filters()
 {
 	/* Deleting comment. */
-	filter_array[0].fce_filter = filter_delete_comment;
-	filter_array[0].fce_re_filter = NULL;
-	strcpy(filter_array[0].filter_name, "Delete comment");
-	filter_array[0].compare = both;
-	filter_array[0].turn_off = 0;
-	filter_array[0].filter_can_off = 1;
-
-	/* Separate HTML tags on separate lines. */
-	filter_array[1].fce_filter = filter_separate_tags;
+	filter_array[1].fce_filter = filter_delete_comment;
 	filter_array[1].fce_re_filter = NULL;
-	strcpy(filter_array[1].filter_name, "Separate HTML tags");
+	strcpy(filter_array[1].filter_name, "Delete comment");
 	filter_array[1].compare = both;
 	filter_array[1].turn_off = 0;
-	filter_array[1].filter_can_off = 0;
+	filter_array[1].filter_can_off = 1;
 
-	/* Deleting extra white spaces. */
-	filter_array[2].fce_filter = filter_delete_space;
+	/* Separate HTML tags on separate lines. */
+	filter_array[2].fce_filter = filter_separate_tags;
 	filter_array[2].fce_re_filter = NULL;
-	strcpy(filter_array[2].filter_name, "Delete spaces");
+	strcpy(filter_array[2].filter_name, "Separate HTML tags");
 	filter_array[2].compare = both;
 	filter_array[2].turn_off = 0;
 	filter_array[2].filter_can_off = 0;
 
-	/* Change special chars to entites. */
-	filter_array[3].fce_filter = filter_change_specchar;
+	/* Deleting extra white spaces. */
+	filter_array[3].fce_filter = filter_delete_space;
 	filter_array[3].fce_re_filter = NULL;
-	strcpy(filter_array[3].filter_name, "Change special character");
-	filter_array[3].compare = source;
+	strcpy(filter_array[3].filter_name, "Delete spaces");
+	filter_array[3].compare = both;
 	filter_array[3].turn_off = 0;
 	filter_array[3].filter_can_off = 0;
 
-	/* Modife of operation delete from patch file. Source level. */
-	filter_array[4].fce_filter = NULL;
-	filter_array[4].fce_re_filter = filter_delete_src;
-	strcpy(filter_array[4].filter_name, "Delete blocks");
+	/* Change special chars to entites. */
+	filter_array[4].fce_filter = filter_change_specchar;
+	filter_array[4].fce_re_filter = NULL;
+	strcpy(filter_array[4].filter_name, "Change special character");
 	filter_array[4].compare = source;
 	filter_array[4].turn_off = 0;
 	filter_array[4].filter_can_off = 0;
 
-	/* Modife of operation append from patch file. Source level. */
+	/* Modife of operation delete from patch file. Source level. */
 	filter_array[5].fce_filter = NULL;
-	filter_array[5].fce_re_filter = filter_append_src;
-	strcpy(filter_array[5].filter_name, "Append blocks");
+	filter_array[5].fce_re_filter = filter_delete_src;
+	strcpy(filter_array[5].filter_name, "Delete blocks");
 	filter_array[5].compare = source;
 	filter_array[5].turn_off = 0;
 	filter_array[5].filter_can_off = 0;
 
-	/* Modife of operation change from patch file. Source level. */
+	/* Modife of operation append from patch file. Source level. */
 	filter_array[6].fce_filter = NULL;
-	filter_array[6].fce_re_filter = filter_change_src;
-	strcpy(filter_array[6].filter_name, "Change blocks");
+	filter_array[6].fce_re_filter = filter_append_src;
+	strcpy(filter_array[6].filter_name, "Append blocks");
 	filter_array[6].compare = source;
 	filter_array[6].turn_off = 0;
 	filter_array[6].filter_can_off = 0;
-	
-	/* Modife of operation delete from patch file. Shown text level. */
+
+	/* Modife of operation change from patch file. Source level. */
 	filter_array[7].fce_filter = NULL;
-	filter_array[7].fce_re_filter = filter_delete_txt;
-	strcpy(filter_array[7].filter_name, "Delete blocks");
-	filter_array[7].compare = text;
+	filter_array[7].fce_re_filter = filter_change_src;
+	strcpy(filter_array[7].filter_name, "Change blocks");
+	filter_array[7].compare = source;
 	filter_array[7].turn_off = 0;
 	filter_array[7].filter_can_off = 0;
-
-	/* Modife of operation append from patch file. Shown text level. */
+	
+	/* Modife of operation delete from patch file. Shown text level. */
 	filter_array[8].fce_filter = NULL;
-	filter_array[8].fce_re_filter = filter_append_txt;
-	strcpy(filter_array[8].filter_name, "Append blocks");
+	filter_array[8].fce_re_filter = filter_delete_txt;
+	strcpy(filter_array[8].filter_name, "Delete blocks");
 	filter_array[8].compare = text;
 	filter_array[8].turn_off = 0;
 	filter_array[8].filter_can_off = 0;
 
-	/* Modife of operation change from patch file. Shown text level. */
+	/* Modife of operation append from patch file. Shown text level. */
 	filter_array[9].fce_filter = NULL;
-	filter_array[9].fce_re_filter = filter_change_txt;
-	strcpy(filter_array[9].filter_name, "Change blocks");
+	filter_array[9].fce_re_filter = filter_append_txt;
+	strcpy(filter_array[9].filter_name, "Append blocks");
 	filter_array[9].compare = text;
 	filter_array[9].turn_off = 0;
 	filter_array[9].filter_can_off = 0;
+
+	/* Modife of operation change from patch file. Shown text level. */
+	filter_array[10].fce_filter = NULL;
+	filter_array[10].fce_re_filter = filter_change_txt;
+	strcpy(filter_array[10].filter_name, "Change blocks");
+	filter_array[10].compare = text;
+	filter_array[10].turn_off = 0;
+	filter_array[10].filter_can_off = 0;
 }
 
 /**
- * Load configuration of programm.
+ * Load configuration of program.
  * Order of akcepting configuration:
- *	- first place where programm search is command line
+ *	- first place where program search is command line
  *	- if isn't on command line then searching in config file (CONFIG_FILE_NAME)
  *	- else in (config.h) the default configuration constants
  * @return (None).
@@ -222,8 +239,15 @@ void load_config()
 	config.log_level = LOG_LEVEL;
 	config.log_to_file = LOG_TO_FILE;
 	config.log_file_name = LOG_FILE_NAME;
-	config.diff = DIFF;
-	config.patch = PATCH;
+
+	tmp_diff = (char*) malloc(strlen(DIFF)+1);
+	strcpy(tmp_diff, DIFF);
+	config.diff = tmp_diff;
+	
+	tmp_patch = (char*) malloc(strlen(PATCH)+1);
+	strcpy(tmp_patch, PATCH);
+	config.patch = tmp_patch;
+
 	config.revision_name = NULL;
 	config.log_file = NULL;
 	config.diff_minimal = DIFF_MINIMAL;
@@ -359,14 +383,15 @@ void load_config()
 
 						/* If isn't variable empty. */
 						if(cfg_file.word[0] != 0){
-							/* Alloc new tmp string. */
-							tmp_diff = (char*) malloc(strlen(cfg_file.word)+1);
+							/* Realloc tmp diff to new name. */
+							if((tmp_diff = (char*) realloc(tmp_diff,strlen(cfg_file.word)+1)) != NULL){
 
-							/* Copy to tmp string. */
-							strcpy(tmp_diff, cfg_file.word);
+								/* Copy to tmp string. */
+								strcpy(tmp_diff, cfg_file.word);
 
-							/* Take pointer from tmp string. */
-							config.diff = tmp_diff;
+								/* Take pointer from tmp string. */
+								config.diff = tmp_diff;
+							}
 						}
 					}
 					else if(!strcmp(cfg_file.word,"PATCH")){
@@ -376,14 +401,15 @@ void load_config()
 
 						/* If isn't variable empty. */
 						if(cfg_file.word[0] != 0){
-							/* Alloc new tmp string. */
-							tmp_patch = (char*) malloc(strlen(cfg_file.word)+1);
+							/* Realloc tmp patch to new name. */
+							if((tmp_patch = (char*) realloc(tmp_patch, strlen(cfg_file.word)+1)) != NULL){
 
-							/* Copy to tmp string. */
-							strcpy(tmp_patch, cfg_file.word);
+								/* Copy to tmp string. */
+								strcpy(tmp_patch, cfg_file.word);
 
-							/* Take pointer from tmp string. */
-							config.patch = tmp_patch;
+								/* Take pointer from tmp string. */
+								config.patch = tmp_patch;
+							}
 						}
 					}
 					else if(!strcmp(cfg_file.word,"REVISION_NAME")){
@@ -570,24 +596,24 @@ void usage(int status)
 Usage: %s FILE1 FILE2 [OPTION]... \n", program_name);
       printf ("\n\
   Default comparation is on the source level.\n\
-  -d --debug : don't delete temporary files using by programm\n\
-  -D DIFF_NAME --use-diff=DIFF_NAME : name of external Diff programm (default \"diff.exe\")\n\
+  -d --debug : don't delete temporary files using by program\n\
+  -D DIFF_NAME --use-diff=DIFF_NAME : name of external Diff program (default for win32 \"diff.exe\", for unix \"diff\")\n\
   -x --minimal : GNU Diff Performance Tradeoffs - diff to use a modified algorithm that sometimes produces a smaller set of differences\n\
   -y --speed-large-files : GNU Diff Performance Tradeoffs - speeds up the comparisons without changing the output; diff might produce a larger set of differences\n\
   -l x --log-level=X : level of logging (X = 0 to 4) (default 3)\n\
   -f --log-to-file : turn on logging to file (default off = to stderr)\n\
   -h --help : print this help\n\
   -F log_file_name --log-file-name=LOG_FILE_NAME : name of file for logging (default \"ladandiff.log\")\n\
-  -P PATCH_NAME --use-patch=PATCH_NAME : name of external Patch programm (default \"patch.exe\")\n\
-  -s --compare-source : comparation files on the source level\n\
-  -t --compare-text : comparation files on the shown text level (default)\n\
-  -L --compare-words : comparation files on line by line level (default)\n\
-  -W --compare-lines : comparation files on word by word level\n\
+  -P PATCH_NAME --use-patch=PATCH_NAME : name of external Patch program (default for win32 \"patch.exe\", for unix \"patch\")\n\
+  -s --compare-source : comparison files on the source level\n\
+  -t --compare-text : comparison files on the shown text level (default)\n\
+  -L --compare-words : comparison files on line by line level (default)\n\
+  -W --compare-lines : comparison files on word by word level\n\
   -R REVISION_NAME --revision-file-name=REVISION_NAME : name of revision file (default \"revision_of_(name_of_origin_file).html\")\n\
   -c X --css=X : css style is added to tags directly = 1 or eternal css = 2 or embedded = 3 (default embedded = 3)\n\
-  -C CSS_FILE_NAME --css-file-name=CSS_FILE_NAME: name of external css style-sheet  (default \"ladandiff.css\")\n\
+  -C CSS_FILE_NAME --css-file-name=CSS_FILE_NAME: name of external css style-sheet, posible with path to css-style (default \"ladandiff.css\")\n\
   -n --show-filters : show filtr for normalization with information which is able to turn off\n\
-  -O X,Y,... --turn-off-filters=X,Y,... : turn off filtre(s) with number(s) X(Y,...)\n\n");
+  -O X,Y,... --turn-off-filters=X,Y,... : turn off filtre(s) with index(s) X(Y,...)\n\n");
 	}
 }
 
@@ -595,82 +621,62 @@ Usage: %s FILE1 FILE2 [OPTION]... \n", program_name);
  * Write how to use this program
  * @return (None).
  */
-void show_filtres()
+void show_filters()
 {
-	int i, y = 1;
+	int i = 1;
 
 	printf("\
-  - level = comapration level with is used (shown text | source level | both)\n\
-  - number = is number for turning off filter with option -O (use help -h)\n");
+  - number = order and index for turning off filter with option -O (use help -h)\n\
+  - level = comapration level with is filter used (Shown text | Source level | Both)\n\
+  - turn off = if you can filter turn off (Yes | No)\n\
+  - phase = implementation for (post = postprocessing | pre = preprocessing | both | none) phase\n\
+  - filter name = name of filter\n\n");
   
+	printf(" Number | Level  | Turn off | Phase    | Filter name\n");
 
-	printf("\nFiltres for preprocessing:\n");
-	printf("       |  level |number|  filter name\n");
-	for(i=0; i<COUNT_OF_FILTRES; i++)
+	for(i=1; i<=COUNT_OF_FILTERS; i++)
 	{
-		if(filter_array[i].fce_filter != NULL)
+		printf(" %-7i|", i);
+
+		/* Type of comparation. */
+		switch(filter_array[i].compare)
 		{
-			printf("    %i. |", y);
-
-			/* Type of comparation. */
-			switch(filter_array[i].compare)
-			{
-				case text: printf(" text   |"); break;
-				case source: printf(" source |"); break;
-				case both: printf(" both   |"); break;
-			}
-
-			/* If would be turning off write number for option -o. */
-			if(filter_array[i].filter_can_off){printf("  %i   |", i);}
-			else{printf("      |");}
-
-			/* Name of filter. */
-			printf("  %s\n", filter_array[i].filter_name);
-
-			y++;
+			case text: printf(" Text   |"); break;
+			case source: printf(" Source |"); break;
+			case both: printf(" Both   |"); break;
 		}
-	}
 
-	y = 1;
+		/* If would be turning off. */
+		if(filter_array[i].filter_can_off){printf(" Yes      |");}
+		else{printf(" No       |");}
 
-	printf("\nFiltres for postprocessing:\n");
-	printf("       |  level |number|  filter name\n");
-	for(i=COUNT_OF_FILTRES-1; i>-1; i--)
-	{
-		if(filter_array[i].fce_re_filter != NULL)
-		{
-			printf("    %i. |", y);
-
-			/* Type of comparation. */
-			switch(filter_array[i].compare)
-			{
-				case text: printf(" text   |"); break;
-				case source: printf(" source |"); break;
-				case both: printf(" both   |"); break;
-			}
-			
-			/* If would be turning off write number for option -o. */
-			if(filter_array[i].filter_can_off){printf("  %i   |", i);}
-			else{printf("      |");}
-
-
-			/* Name of filter. */
-			printf("  %s\n", filter_array[i].filter_name);
-
-			y++;
+		if(filter_array[i].fce_filter != NULL){
+			/* Filtet only for preprocessing. */
+			if(filter_array[i].fce_re_filter != NULL){printf(" Both    |");}
+			/* Filtet preprocessing and for postprocessing. */
+			else{printf(" Pre      |");}
 		}
+		/* Filtet only for postprocessing. */
+		else if(filter_array[i].fce_re_filter != NULL){printf(" Post     |");}
+		/* Both function are NULL. */
+		else{printf(" None     |");}
+
+		/* Name of filter. */
+		printf(" %s\n", filter_array[i].filter_name);
 	}
 } 
 
 
 /**
- * Clean programm if is fatal error or end of programm.
- * The programm will close yourself if is fatal error then have to clean hard drive from temp file.
- * If programm reach end of programm have to free alloc memmory.
+ * Clean program if is fatal error or end of program.
+ * The program will close yourself if is fatal error then have to clean hard drive from temp file.
+ * If program reach end of program have to free alloc memmory.
  * @return (None).
  */
-void clean_programm()
+void clean_program()
 {
+	program_log(0, "\nEND OF PROGRAM.", "");
+
 	/* Close log file. */
 	if(config.log_to_file)
 	{
@@ -682,7 +688,7 @@ void clean_programm()
  * Load input parameters from command line.
  * @param argc Count of arguments from command line.
  * @param argv Array of arguments.
- * @return int Sign if end the programm (0 = end; 1 = continue).
+ * @return int Sign if end the program (0 = end; 1 = continue).
  */
 int load_cmd_parameters(int argc, char *argv[])
 {
@@ -692,10 +698,10 @@ int load_cmd_parameters(int argc, char *argv[])
 	/* For reading singel input parameters. */
 	int option_char;
 
-	/* Array of number of turning off filtres. */
-	char *turn_off_filtres[COUNT_OF_FILTRES];
+	/* Array of number of turning off filters. */
+	char *turn_off_filters[COUNT_OF_FILTERS];
 
-	/* Forcycle for reading list of turning off filtres. */
+	/* Forcycle for reading list of turning off filters. */
 	int loop;
 
 	/* Reading of input parameters and save configuration from command line. */
@@ -755,7 +761,7 @@ int load_cmd_parameters(int argc, char *argv[])
 				config.log_file_name = optarg;
 				break;
 
-			/* Name of external diff programm. */
+			/* Name of external diff program. */
 			case 'D':
 				config.diff = optarg;
 				break;
@@ -770,7 +776,7 @@ int load_cmd_parameters(int argc, char *argv[])
 				config.diff_speed_large_files = 1;
 				break;
 
-			/* Name of external patch programm. */
+			/* Name of external patch program. */
 			case 'P':
 				config.patch = optarg;
 				break;
@@ -798,23 +804,23 @@ int load_cmd_parameters(int argc, char *argv[])
 
 			/* Shows filters. */
 			case 'n':
-				show_filtres();
+				show_filters();
 				return 0;
 				break;
 
 			/* Turn off filters. */
 			case 'O':
-				turn_off_filtres[0] = strtok(optarg, ",");
+				turn_off_filters[0] = strtok(optarg, ",");
 
 				/* No input number. */
-				if(turn_off_filtres[0]==NULL){break;}
+				if(turn_off_filters[0]==NULL){break;}
 				else
 				{
 					/* Revert to integer. */
-					test_i = atoi(turn_off_filtres[0]);
+					test_i = atoi(turn_off_filters[0]);
 
 					/* Test range of integer. */
-					if(test_i >= 0 && test_i < COUNT_OF_FILTRES){
+					if(test_i >= 0 && test_i < COUNT_OF_FILTERS){
 						
 						/* Turn off filter if can be disabled. */
 						if(filter_array[test_i].filter_can_off){
@@ -823,17 +829,17 @@ int load_cmd_parameters(int argc, char *argv[])
 					}
 				}
 
-				for(loop=1; loop<COUNT_OF_FILTRES; loop++)
+				for(loop=1; loop<COUNT_OF_FILTERS; loop++)
 				{
-					turn_off_filtres[loop] = strtok(NULL, ",");
+					turn_off_filters[loop] = strtok(NULL, ",");
 
-					if(turn_off_filtres[loop] == NULL){break;}
+					if(turn_off_filters[loop] == NULL){break;}
 					else{
 						/* Revert to integer. */
-						test_i = atoi(turn_off_filtres[loop]);
+						test_i = atoi(turn_off_filters[loop]);
 
 						/* Test range of integer. */
-						if(test_i >= 0 && test_i < COUNT_OF_FILTRES){
+						if(test_i >= 0 && test_i < COUNT_OF_FILTERS){
 
 							/* Turn off filter if can be disabled. */
 							if(filter_array[test_i].filter_can_off){
@@ -860,10 +866,10 @@ int load_cmd_parameters(int argc, char *argv[])
  * @return int Sign if preprocesing was ok.
  */
 int filters(SIDE *side){
-	/* For moving betwen filtres. */
+	/* For moving betwen filters. */
 	int i;
     
-	/* Sign if first run of forcycle of filtres. */
+	/* Sign if first run of forcycle of filters. */
 	int first = 1;
 
 	program_log(4, "Open file '%s' as input for preprocess filter.", side->input_file_name);
@@ -880,8 +886,8 @@ int filters(SIDE *side){
 		return 1;
 	}
 	
-	/* Process normalization filtres from first to last. */
-	for(i=0; i<COUNT_OF_FILTRES; i++)
+	/* Process normalization filters from first to last. */
+	for(i=1; i<=COUNT_OF_FILTERS; i++)
 	{
 		/* If the filter is implemented and is for actual comparation. */
 		if(filter_array[i].fce_filter != NULL && (filter_array[i].compare == config.compare || filter_array[i].compare == both))
@@ -937,7 +943,7 @@ int filters(SIDE *side){
 					}
 				}
 
-				/* Erase previous temp file which was used now as an input if wasnt origin or modife file (input files to this programm). */
+				/* Erase previous temp file which was used now as an input if wasnt origin or modife file (input files to this program). */
 				if(!first && !config.debug){
 					remove(side->temp_filename_from);
 				}
@@ -970,7 +976,7 @@ int filters(SIDE *side){
  * @return int Sign if postprocesing was ok.
  */
 int re_filters(SIDE *side){
-	/* For moving betwen filtres. */
+	/* For moving betwen filters. */
 	int i;
 
 	/* Sign of first run in for-cycle for check if patch file is empty. */
@@ -983,8 +989,8 @@ int re_filters(SIDE *side){
 		return 1;
 	}
 
-	/* Process normalization filtres from last to first. Revers order unlike preprocessing. */
-	for(i=COUNT_OF_FILTRES-1; i>-1; i--)
+	/* Process normalization filters from last to first. Revers order unlike preprocessing. */
+	for(i=COUNT_OF_FILTERS; i>0; i--)
 	{
 		/* If the filter is implemented. */
 		if(filter_array[i].fce_re_filter != NULL && (filter_array[i].compare == config.compare || filter_array[i].compare == both))
@@ -1064,6 +1070,23 @@ int main(int argc, char *argv[])
 	/* Leght of command diff - command lenhght is variable debend on input option -d and -b. */
 	int command_diff_lenght;
 
+	/* Command for test diff and patch. */
+	char *test_command_diff;
+	char *test_command_patch;
+
+	/* Leght of test command diff and patch. */
+	int test_command_diff_lenght;
+	int test_command_patch_lenght;
+
+	/* Temporary string for new name of diff and patch and program name. */
+	char *tmp_string_diff; char *tmp_string_patch;
+	char *tmp_string;
+
+	/* Path separators and null output for test commands. */
+	char separator;
+	char separator_string[8];
+	char dev_null[10];
+
 	/* Command for external patch. */
 	char *command_patch;
 
@@ -1072,9 +1095,6 @@ int main(int argc, char *argv[])
 
 	/* Revision file - use only if file are same. */
 	FILE *revision = NULL;
-
-	/* For checking if exists diff and patch. */
-	FILE *exists_diff, *exists_patch;
 
 	/* Save name of this program. */
 	program_name = argv[0];
@@ -1085,7 +1105,7 @@ int main(int argc, char *argv[])
 	/* Load config from default constant and then from config file. */
 	load_config();
 
-	/* Load filtres function to array. */
+	/* Load filters function to array. */
 	load_filters();
 
 	/* Load input parameters. */
@@ -1102,34 +1122,139 @@ int main(int argc, char *argv[])
 	{
 		if((config.log_file = fopen(config.log_file_name, "w+")) == NULL){
 			config.log_to_file = 0;
-			printf("Cannot open file '%s' for logging. Programm progress is logging to terminal.\n", config.log_file_name);
+			printf("Cannot open file '%s' for logging. Program progress is logging to terminal.\n", config.log_file_name);
 		}
 		else{
-			printf("Programm progress is logging to file '%s'.\n", config.log_file_name);
+			printf("Program progress is logging to file '%s'.\n", config.log_file_name);
 		}
 	}
 	printf("\n");
 
-	program_log(0, "START OF PROGRAMM: %s.", program_name);
+	program_log(0, "START OF PROGRAM: %s.", program_name);
 	if(config.compare == source){
 		program_log(0, " - COMPARATION ON SOURCE LEVEL -\n", "");
 	}else{
 		program_log(0, " - COMPARATION ON SHOWN TEXT LEVEL -\n", "");
 	}
 
-	/* Test if exists diff. */
-	if((exists_diff = fopen(config.diff, "r" )) == NULL )
-	{
-		program_log(2, "Diff: \"%s\" doesn't exists in working directory.", config.diff);
-	}
-	else{fclose(exists_diff);}
-	
-	/* Test if exists patch. */
-	if((exists_patch = fopen(config.patch, "r" )) == NULL )
-	{
-		program_log(2, "Patch: \"%s\" doesn't exists in working directory.", config.patch);
-	}
-	else{fclose(exists_patch);}
+	/* Separator for tests command. */
+	#ifdef unix
+		separator = '/';
+		strcpy(separator_string, "/");
+		strcpy(dev_null, "/dev/null");
+	#else
+		separator = '\\';
+		strcpy(separator_string, "\\");
+		strcpy(dev_null, "nul");
+	#endif
+
+		/* Test of diff. */
+		test_command_diff_lenght = strlen(config.diff)+23;
+		test_command_diff = (char*) malloc(test_command_diff_lenght);
+
+		/* Making test command for patch. */
+		strcpy(test_command_diff, config.diff);
+		strcat(test_command_diff, " --version > ");
+		strcat(test_command_diff, dev_null);
+
+
+		/* Add dir of program and try again. */
+		if(system(test_command_diff)){
+			program_log(2, "Diff: \"%s\" doesn't exists. Try search program directory.", config.diff);
+			tmp_string = strrchr(program_name, separator);
+			if(tmp_string  != NULL){
+				free(test_command_diff);
+
+				/* Cut path from name if exists. */
+				tmp_string_diff = strrchr(config.diff, separator);
+				if(tmp_string_diff  != NULL){
+					config.diff =  &tmp_string_diff[1];
+				}
+
+					*tmp_string = '\0';
+				/* Allocate new patch name. */
+				tmp_string_diff = (char*) malloc(strlen(config.diff)+strlen(program_name)+2);
+
+				strcpy(tmp_string_diff, program_name);
+					*tmp_string = separator;
+				strcat(tmp_string_diff, separator_string);
+				strcat(tmp_string_diff, config.diff);
+				
+				config.diff = tmp_string_diff;
+
+
+				/* Test command for diff. */
+				test_command_diff_lenght = strlen(config.diff)+23;
+
+				test_command_diff = (char*) malloc(test_command_diff_lenght);
+
+				/* Making test command for diff. */
+				strcpy(test_command_diff, config.diff);
+				strcat(test_command_diff, " --version > ");
+				strcat(test_command_diff, dev_null);
+
+				if(system(test_command_diff)){
+					program_log(1, "Diff: \"%s\" doesn't exists in program directory.", config.diff);
+					clean_program();
+					return 1;
+				}
+			}
+		}
+
+		free(test_command_diff);
+
+		/* Test of patch. */
+		test_command_patch_lenght = strlen(config.patch)+23;
+		test_command_patch = (char*) malloc(test_command_patch_lenght);
+
+		/* Making test command for patch. */
+		strcpy(test_command_patch, config.patch);
+		strcat(test_command_patch, " --version > ");
+		strcat(test_command_patch, dev_null);
+
+		/* Add dir of program and try again. */
+		if(system(test_command_patch)){
+			program_log(2, "Patch: \"%s\" doesn't exists. Try search program directory.", config.patch);
+			tmp_string = strrchr(program_name, separator);
+			if(tmp_string  != NULL){
+				free(test_command_patch);
+
+				/* Cut path from name if exists. */
+				tmp_string_patch = strrchr(config.patch, separator);
+				if(tmp_string_patch  != NULL){
+					config.patch = &tmp_string_patch[1];
+				}
+
+					*tmp_string = '\0';
+				/* Allocate new patch name. */
+				tmp_string_patch = (char*) malloc(strlen(config.patch)+strlen(program_name)+2);
+
+				strcpy(tmp_string_patch, program_name);
+					*tmp_string = separator;
+				strcat(tmp_string_patch, separator_string);
+				strcat(tmp_string_patch, config.patch);
+				
+				config.patch = tmp_string_patch;	
+
+				/* Test command for diff. */
+				test_command_patch_lenght = strlen(config.patch)+23;
+
+				test_command_patch = (char*) malloc(test_command_patch_lenght);
+
+				/* Making test command for diff. */
+				strcpy(test_command_patch, config.patch);
+				strcat(test_command_patch, " --version > ");
+				strcat(test_command_patch, dev_null);
+
+				if(system(test_command_patch)){
+					program_log(1, "Patch: \"%s\" doesn't exists in program directory.", config.patch);
+					clean_program();
+					return 1;
+				}
+			}
+		}
+
+		free(test_command_patch);
 
 	/* Error - missing input files. Optind = count of parameters (counted from 2: no parameter optind=1). */
 	if(optind + 2 != argc)
@@ -1137,8 +1262,8 @@ int main(int argc, char *argv[])
 		program_log(1, "Missing input files.", "");
 		usage(2);
 
-		/* Before close of programm have to clean it up. */
-		clean_programm();
+		/* Before close of program have to clean it up. */
+		clean_program();
 
 		return 1;
 	}
@@ -1158,8 +1283,8 @@ int main(int argc, char *argv[])
     {
 		program_log(1, "Fail in preprocessing file '%s'.", left_side->temp_filename_to);
 
-		/* Before close of programm have to clean it up. */
-		clean_programm();
+		/* Before close of program have to clean it up. */
+		clean_program();
 
         return 1;
     }
@@ -1174,8 +1299,8 @@ int main(int argc, char *argv[])
 	{
 		program_log(1, "Fail in preprocessing file '%s'.", right_side->temp_filename_to);
 		
-		/* Before close of programm have to clean it up. */
-		clean_programm();
+		/* Before close of program have to clean it up. */
+		clean_program();
         
 		return 1;
     }
@@ -1236,8 +1361,8 @@ int main(int argc, char *argv[])
 	{
 		program_log(1, "Fail in preprocessing file '%s'.", left_side->temp_filename_to);
 		
-		/* Before close of programm have to clean it up. */
-		clean_programm();
+		/* Before close of program have to clean it up. */
+		clean_program();
 	        
 		return 1;
     }
@@ -1279,7 +1404,7 @@ int main(int argc, char *argv[])
 		{
 			program_log(1, "Error in last modification of revision file.", "");
 
-			clean_programm();
+			clean_program();
 
 			return 1;
 		}
@@ -1327,10 +1452,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	program_log(0, "\nEND OF PROGRAMM.", "");
-
-	/* Before end of programm have to clean it up. */
-	clean_programm();
+	/* Before end of program have to clean it up. */
+	clean_program();
 
 	/* Everithing was ok. */
 	return 0;

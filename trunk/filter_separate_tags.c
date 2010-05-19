@@ -1,3 +1,20 @@
+/* Part of LadanDiff (Show differences between two HTML files.)
+   Copyright (C) 2008-2010
+   Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
 /** 
  * @file filter_separate_tags.c
  * @brief Filter for separating HTML tags on lines.
@@ -49,7 +66,7 @@ int filter_separate_tags(SIDE* side)
 	char *p_tmp = NULL;
 
 	/* Sign for what part of comment is searching. */
-	int faze = 0;
+	int phase = 0;
 
 	/* Saved last character in printed text for cuted rest of text. */
 	char tmp_char = 0;
@@ -66,7 +83,7 @@ int filter_separate_tags(SIDE* side)
 		/* Something was loaded. */
 		while(side->word[0] != 0 || side->white_space[0] != 0)
 		{
-			switch(faze)
+			switch(phase)
 			{
 				/* Searching for begining of tag "<name-of-tag". */
 				case 0:
@@ -120,8 +137,8 @@ int filter_separate_tags(SIDE* side)
 
 							p_tmp[0] = tmp_char;
 
-							/* Move to next faze - searching end of tag ">". */
-							faze++;
+							/* Move to next phase - searching end of tag ">". */
+							phase++;
 
 							/* Cut printed string and begining of tag. */
 							strcpy(side->word, p_tmp);
@@ -211,8 +228,8 @@ int filter_separate_tags(SIDE* side)
 						/* Cut printed string. */
 						strcpy(side->word, finded);
 
-						/* Move to first faze - searching for tag (character "<"). */
-						faze--;
+						/* Move to first phase - searching for tag (character "<"). */
+						phase--;
 					}
 
 					/* It can be a "/" for non pair tags or word is empty or list of attributes. */

@@ -1,3 +1,20 @@
+/*
+   Copyright (C) 2008-2010
+   Free Software Foundation, Inc.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
 /** 
  * @file fce.c
  * @brief Library of useful function.
@@ -17,7 +34,7 @@
  * @param message_var String which is placed to massage instead specifier.
  * @return (None).
  */
-void program_log(int level, char *message_str, char *message_var)
+void program_log(int level, const char *message_str, const char *message_var)
 {
 	char prefix_level[13];
 
@@ -120,8 +137,8 @@ int copy_whitespace(SIDE *side)
 			side->size_white_space *= 2;
 
 			/* Realloc of side->white_space. */
-			if((side->white_space = (char*) realloc(side->white_space,side->size_white_space)) == NULL){
-				printf("Error: Chyba reallocu retezce bilych znaku...");
+			if((side->white_space = (char*) realloc(side->white_space, side->size_white_space)) == NULL){
+				printf("Error: Realloc in fce copy_whitespaces();");
 				return 1;
 			}
 		}
@@ -161,8 +178,8 @@ int copy_word(SIDE *side)
 			side->size_word *= 2;
 
 			/* Realloc of side->word. */
-			if((side->word = (char*) realloc(side->word,side->size_word)) == NULL){
-				printf("Error: realloc of reading word...");
+			if((side->word = (char*) realloc(side->word, side->size_word)) == NULL){
+				printf("Error: Realloc in fce copy_word();");
 				return 1;
 			}
 		}
@@ -333,6 +350,7 @@ int is_digit(char number)
 char *my_tempnam(char *prefix)
 {
 	char *tmp_name = NULL;
+	char *tmp_string = NULL;
 
 	if(prefix != NULL){
 		tmp_name = (char*) malloc(strlen(prefix)+1+L_tmpnam+5);
@@ -344,6 +362,14 @@ char *my_tempnam(char *prefix)
 	tmpnam(tmp_name);
 
 	/* Because ms windows - save tmp files to executing directory instead root directory. */
-	if(tmp_name[0] == '\\'){tmp_name[0] = '/';}
-	return tmp_name;
+	if(tmp_name[0] == '\\'){
+		tmp_string = (char*) malloc(strlen(tmp_name)+2);
+		strcpy(tmp_string, ".");
+		strcat(tmp_string, tmp_name);
+		free(tmp_name);
+		return tmp_string;
+	}
+	else{
+		return tmp_name;
+	}
 }
