@@ -39,7 +39,7 @@
  *
  * For us is tag: 
  * Searching opened character "<" with name of tag "<name-of-tag"
- *		- name-of-tags are sequence of alphabet and numeric character
+ *		- name-of-tags are sequence of alphabet and numeric character and can included character '!' (because tag <!DOCTYPE...)
  *		- if name-of-tag isn't sequence above defined is character "<" isn't taken as opening character for tag.
  * Then skip all words and searching for closing character ">".
  *
@@ -97,7 +97,7 @@ int filter_separate_tags(SIDE* side)
 						while(*p_tmp != 0)
 						{
 							/* Alphabetic character or number. */
-							if((*p_tmp > 64 && *p_tmp < 91) || (*p_tmp > 96 && *p_tmp < 123) || (*p_tmp > 47 && *p_tmp < 58))
+							if((*p_tmp > 64 && *p_tmp < 91) || (*p_tmp > 96 && *p_tmp < 123) || (*p_tmp > 47 && *p_tmp < 58) || (*p_tmp == 33))
 							{
 								p_tmp++;
 							}
