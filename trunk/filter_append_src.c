@@ -132,7 +132,7 @@ int filter_append_src(SIDE* side)
 		/* If is new line set sign new line for checking new operation. */
 		if(side->white_space[0] == '\n'){
 			new_line = 1;
-		}
+		} else {new_line = 0;}
 	}
 
 	return 0;

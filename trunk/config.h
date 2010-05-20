@@ -35,7 +35,7 @@
 #include <stdlib.h>
 
 #ifndef CONFIG
-#define CONFIG /**< For only one include to programm. */
+#define CONFIG 
 
 /* Properties which user can change. */
 
